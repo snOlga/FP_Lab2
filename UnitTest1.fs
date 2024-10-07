@@ -171,3 +171,29 @@ let insertTest10 () =
         |> insert "abc"
         |> insert "adk"
     )
+
+[<Test>]
+let insertTest11 () =
+    Assert.AreEqual(
+        { Value = ' '
+          Children =
+            seq {
+                yield
+                    { Value = 'a'
+                      Children = Seq.empty }
+            } },
+        create |> insert "a" |> insert ""
+    )
+
+[<Test>]
+let insertTest12 () =
+    Assert.AreEqual(
+        { Value = ' '
+          Children =
+            seq {
+                yield
+                    { Value = 'a'
+                      Children = Seq.empty }
+            } },
+        create |> insert "" |> insert "a"
+    )
