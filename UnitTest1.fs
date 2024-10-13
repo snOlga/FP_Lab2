@@ -176,12 +176,7 @@ let insertTest10 () =
 let insertTest11 () =
     Assert.AreEqual(
         { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'a'
-                      Children = Seq.empty }
-            } },
+          Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
         create |> insert "a" |> insert ""
     )
 
@@ -189,12 +184,7 @@ let insertTest11 () =
 let insertTest12 () =
     Assert.AreEqual(
         { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'a'
-                      Children = Seq.empty }
-            } },
+          Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
         create |> insert "" |> insert "a"
     )
 
@@ -216,7 +206,6 @@ let insertTest12 () =
 //     create |> insert "abc" |> insert "bca" |> delete "bca"
 //   )
 
-
 [<Test>]
 let mapTest () =
     Assert.AreEqual(
@@ -232,5 +221,72 @@ let mapTest () =
                                   Children = seq { yield { Value = 'C'; Children = Seq.empty } } }
                         } }
             } },
-    create |> insert "abc" |> mapTrie System.Char.ToUpper
-  )
+        create
+        |> insert "abc"
+        |> mapTrie System.Char.ToUpper
+    )
+
+[<Test>]
+let filterTest () =
+    Assert.AreEqual(
+        { Value = ' '
+          Children =
+            seq {
+                yield
+                    { Value = 'A'
+                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
+            } },
+        create
+        |> insert "ABc"
+        |> filterTrie System.Char.IsUpper
+    )
+
+[<Test>]
+let filterTest2 () =
+    Assert.AreEqual(
+        { Value = ' '
+          Children =
+            seq {
+                yield
+                    { Value = 'A'
+                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
+            } },
+        create
+        |> insert "ABcd"
+        |> filterTrie System.Char.IsUpper
+    )
+
+[<Test>]
+let filterTest3 () =
+    Assert.AreEqual(
+        { Value = ' '
+          Children =
+            seq {
+                yield
+                    { Value = 'A'
+                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
+            } },
+        create
+        |> insert "AcBcd"
+        |> filterTrie System.Char.IsUpper
+    )
+
+[<Test>]
+let filterTest4 () =
+    Assert.AreEqual(
+        { Value = ' '
+          Children =
+            seq {
+                yield
+                    { Value = 'A'
+                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
+
+                yield
+                    { Value = 'D'
+                      Children = seq { yield { Value = 'K'; Children = Seq.empty } } }
+            } },
+        create
+        |> insert "AcBcd"
+        |> insert "DcKcd"
+        |> filterTrie System.Char.IsUpper
+    )

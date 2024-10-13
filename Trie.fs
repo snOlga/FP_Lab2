@@ -95,3 +95,18 @@ let rec mapTrie (func) (current: Node) : Node =
     | _ ->
         { Value = func current.Value
           Children = Seq.map (fun child -> mapTrie func child) current.Children }
+
+let rec filterTrie (func) (current: Node) : Node =
+    match Seq.length current.Children with
+    | len when len <> 0 ->
+        { current with
+            Children =
+                seq {
+                    for child in current.Children do
+                        match child.Value with
+                        | value when func value = true && (filterTrie func child).Value <> ' ' -> yield filterTrie func child
+                        | value when func value = false -> yield! (filterTrie func child).Children
+                        | _ -> ()
+                } }
+    | 0 when func current.Value = true -> current
+    | 0 when func current.Value = false -> { current with Value = ' ' }
