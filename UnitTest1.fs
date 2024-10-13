@@ -197,3 +197,40 @@ let insertTest12 () =
             } },
         create |> insert "" |> insert "a"
     )
+
+// [<Test>]
+// let deleteTest () =
+//     Assert.AreEqual(
+//         { Value = ' '
+//           Children =
+//             seq {
+//                 yield
+//                     { Value = 'a'
+//                       Children =
+//                         seq {
+//                             yield
+//                                 { Value = 'b'
+//                                   Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
+//                         } }
+//             } },
+//     create |> insert "abc" |> insert "bca" |> delete "bca"
+//   )
+
+
+[<Test>]
+let mapTest () =
+    Assert.AreEqual(
+        { Value = ' '
+          Children =
+            seq {
+                yield
+                    { Value = 'A'
+                      Children =
+                        seq {
+                            yield
+                                { Value = 'B'
+                                  Children = seq { yield { Value = 'C'; Children = Seq.empty } } }
+                        } }
+            } },
+    create |> insert "abc" |> mapTrie System.Char.ToUpper
+  )

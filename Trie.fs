@@ -63,3 +63,35 @@ let rec insert (word: char seq) (current: Node) : Node =
                       Children = Seq.empty }
 
                 { current with Children = Seq.append current.Children (Seq.singleton newChild) }
+
+// let rec delete (word: char seq) (current: Node) : Node =
+//     match Seq.tryFind (fun node -> node.Value = (Seq.head word)) current.Children with
+//     | None -> current
+//     | Some child when Seq.length word > 1 ->
+//         { current with
+//             Children =
+//                 seq {
+//                     for node in current.Children do
+//                         if node.Value <> (Seq.head word) then
+//                             yield node
+//                         else
+//                             yield! (delete (Seq.tail word) node).Children
+//                 } }
+//     | Some child when Seq.length word = 1 ->
+//         { current with
+//             Children =
+//                 Seq.append
+//                     (child.Children)
+//                     (Seq.map
+//                         (fun node ->
+//                             match node.Value with
+//                             | _ when node.Value <> (Seq.head word) -> node)
+//                         current.Children) }
+
+
+let rec mapTrie (func) (current: Node) : Node =
+    match Seq.length current.Children with
+    | 0 -> { current with Value = func current.Value }
+    | _ ->
+        { Value = func current.Value
+          Children = Seq.map (fun child -> mapTrie func child) current.Children }
