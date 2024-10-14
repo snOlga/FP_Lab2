@@ -64,29 +64,29 @@ let rec insert nullValue (word: seq<'a>) (current: Node<'T>) : Node<'T> =
 
                 { current with Children = Seq.append current.Children (Seq.singleton newChild) }
 
-// let rec delete (word: char seq) (current: Node) : Node =
-//     match Seq.tryFind (fun node -> node.Value = (Seq.head word)) current.Children with
-//     | None -> current
-//     | Some child when Seq.length word > 1 ->
-//         { current with
-//             Children =
-//                 seq {
-//                     for node in current.Children do
-//                         if node.Value <> (Seq.head word) then
-//                             yield node
-//                         else
-//                             yield! (delete (Seq.tail word) node).Children
-//                 } }
-//     | Some child when Seq.length word = 1 ->
-//         { current with
-//             Children =
-//                 Seq.append
-//                     (child.Children)
-//                     (Seq.map
-//                         (fun node ->
-//                             match node.Value with
-//                             | _ when node.Value <> (Seq.head word) -> node)
-//                         current.Children) }
+let rec delete (word: seq<'a>) (current: Node<'T>) : Node<'T> =
+    match Seq.tryFind (fun node -> node.Value = (Seq.head word)) current.Children with
+    | None -> current
+    | Some child when Seq.length word > 0 ->
+        { current with
+            Children =
+                seq {
+                    for node in current.Children do
+                        if node.Value <> (Seq.head word) then
+                            yield node
+                        else
+                            yield! (delete (Seq.tail word) node).Children
+                } }
+    | Some child when Seq.length word = 0 ->
+        { current with
+            Children =
+                Seq.append
+                    (child.Children)
+                    (Seq.map
+                        (fun node ->
+                            match node.Value with
+                            | _ when node.Value <> (Seq.head word) -> node)
+                        current.Children) }
 
 
 let rec mapTrie nullValue (func) (current: Node<'T>) : Node<'T> =

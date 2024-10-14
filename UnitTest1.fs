@@ -232,23 +232,23 @@ let insertTest13 () =
                                         yield 3})
     )
 
-// [<Test>]
-// let deleteTest () =
-//     Assert.AreEqual(
-//         { Value = ' '
-//           Children =
-//             seq {
-//                 yield
-//                     { Value = 'a'
-//                       Children =
-//                         seq {
-//                             yield
-//                                 { Value = 'b'
-//                                   Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
-//                         } }
-//             } },
-//     create nullValueChar |> insert nullValueChar "abc" |> insert nullValueChar "bca" |> delete "bca"
-//   )
+[<Test>]
+let deleteTest () =
+    Assert.AreEqual(
+        { Value = ' '
+          Children =
+            seq {
+                yield
+                    { Value = 'a'
+                      Children =
+                        seq {
+                            yield
+                                { Value = 'b'
+                                  Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
+                        } }
+            } },
+    create nullValueChar |> insert nullValueChar "abc" |> insert nullValueChar "bca" |> delete "bca"
+  )
 
 [<Test>]
 let mapTest () =
