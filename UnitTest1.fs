@@ -3,6 +3,8 @@ module FP_Lab2
 open NUnit.Framework
 open Trie
 
+let nullValueChar = ' '
+
 [<Test>]
 let insertTest1 () =
     Assert.AreEqual(
@@ -18,7 +20,7 @@ let insertTest1 () =
                                   Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
                         } }
             } },
-        create |> insert "abc"
+        create nullValueChar |> insert nullValueChar "abc"
     )
 
 [<Test>]
@@ -30,7 +32,9 @@ let insertTest2 () =
                 yield { Value = 'a'; Children = Seq.empty }
                 yield { Value = 'b'; Children = Seq.empty }
             } },
-        create |> insert "a" |> insert "b"
+        create nullValueChar
+        |> insert nullValueChar "a"
+        |> insert nullValueChar "b"
     )
 
 [<Test>]
@@ -52,7 +56,9 @@ let insertTest3 () =
 
                 yield { Value = 'b'; Children = Seq.empty }
             } },
-        create |> insert "ab" |> insert "b"
+        create nullValueChar
+        |> insert nullValueChar "ab"
+        |> insert nullValueChar "b"
     )
 
 [<Test>]
@@ -69,7 +75,9 @@ let insertTest4 () =
                             yield { Value = 'c'; Children = Seq.empty }
                         } }
             } },
-        create |> insert "ab" |> insert "ac"
+        create nullValueChar
+        |> insert nullValueChar "ab"
+        |> insert nullValueChar "ac"
     )
 
 [<Test>]
@@ -82,7 +90,9 @@ let insertTest5 () =
                     { Value = 'a'
                       Children = seq { yield { Value = 'b'; Children = Seq.empty } } }
             } },
-        create |> insert "ab" |> insert "a"
+        create nullValueChar
+        |> insert nullValueChar "ab"
+        |> insert nullValueChar "a"
     )
 
 [<Test>]
@@ -90,7 +100,9 @@ let insertTest6 () =
     Assert.AreEqual(
         { Value = ' '
           Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
-        create |> insert "a" |> insert "a"
+        create nullValueChar
+        |> insert nullValueChar "a"
+        |> insert nullValueChar "a"
     )
 
 [<Test>]
@@ -105,7 +117,9 @@ let insertTest7 () =
 
                 yield { Value = 'c'; Children = Seq.empty }
             } },
-        create |> insert "ab" |> insert "c"
+        create nullValueChar
+        |> insert nullValueChar "ab"
+        |> insert nullValueChar "c"
     )
 
 [<Test>]
@@ -122,7 +136,9 @@ let insertTest8 () =
                     { Value = 'c'
                       Children = seq { yield { Value = 'a'; Children = Seq.empty } } }
             } },
-        create |> insert "ab" |> insert "ca"
+        create nullValueChar
+        |> insert nullValueChar "ab"
+        |> insert nullValueChar "ca"
     )
 
 [<Test>]
@@ -140,7 +156,7 @@ let insertTest9 () =
                                   Children = seq { yield { Value = 'a'; Children = Seq.empty } } }
                         } }
             } },
-        create |> insert "aaa"
+        create nullValueChar |> insert nullValueChar "aaa"
     )
 
 [<Test>]
@@ -166,10 +182,10 @@ let insertTest10 () =
                                   Children = seq { yield { Value = 'k'; Children = Seq.empty } } }
                         } }
             } },
-        create
-        |> insert "abq"
-        |> insert "abc"
-        |> insert "adk"
+        create nullValueChar
+        |> insert nullValueChar "abq"
+        |> insert nullValueChar "abc"
+        |> insert nullValueChar "adk"
     )
 
 [<Test>]
@@ -177,7 +193,9 @@ let insertTest11 () =
     Assert.AreEqual(
         { Value = ' '
           Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
-        create |> insert "a" |> insert ""
+        create nullValueChar
+        |> insert nullValueChar "a"
+        |> insert nullValueChar ""
     )
 
 [<Test>]
@@ -185,7 +203,33 @@ let insertTest12 () =
     Assert.AreEqual(
         { Value = ' '
           Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
-        create |> insert "" |> insert "a"
+        create nullValueChar
+        |> insert nullValueChar ""
+        |> insert nullValueChar "a"
+    )
+
+let nullValueInt = 0
+
+[<Test>]
+let insertTest13 () =
+    Assert.AreEqual(
+        { Value = 0
+          Children =
+            seq {
+                yield
+                    { Value = 1
+                      Children =
+                        seq {
+                            yield
+                                { Value = 2
+                                  Children = seq { yield { Value = 3; Children = Seq.empty } } }
+                        } }
+            } },
+        create nullValueInt
+        |> insert nullValueInt (seq { 
+                                        yield 1 
+                                        yield 2
+                                        yield 3})
     )
 
 // [<Test>]
@@ -203,7 +247,7 @@ let insertTest12 () =
 //                                   Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
 //                         } }
 //             } },
-//     create |> insert "abc" |> insert "bca" |> delete "bca"
+//     create nullValueChar |> insert nullValueChar "abc" |> insert nullValueChar "bca" |> delete "bca"
 //   )
 
 [<Test>]
@@ -221,9 +265,9 @@ let mapTest () =
                                   Children = seq { yield { Value = 'C'; Children = Seq.empty } } }
                         } }
             } },
-        create
-        |> insert "abc"
-        |> mapTrie System.Char.ToUpper
+        create nullValueChar
+        |> insert nullValueChar "abc"
+        |> mapTrie nullValueChar System.Char.ToUpper
     )
 
 [<Test>]
@@ -236,9 +280,9 @@ let filterTest () =
                     { Value = 'A'
                       Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
             } },
-        create
-        |> insert "ABc"
-        |> filterTrie System.Char.IsUpper
+        create nullValueChar
+        |> insert nullValueChar "ABc"
+        |> filterTrie nullValueChar System.Char.IsUpper
     )
 
 [<Test>]
@@ -251,9 +295,9 @@ let filterTest2 () =
                     { Value = 'A'
                       Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
             } },
-        create
-        |> insert "ABcd"
-        |> filterTrie System.Char.IsUpper
+        create nullValueChar
+        |> insert nullValueChar "ABcd"
+        |> filterTrie nullValueChar System.Char.IsUpper
     )
 
 [<Test>]
@@ -266,9 +310,9 @@ let filterTest3 () =
                     { Value = 'A'
                       Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
             } },
-        create
-        |> insert "AcBcd"
-        |> filterTrie System.Char.IsUpper
+        create nullValueChar
+        |> insert nullValueChar "AcBcd"
+        |> filterTrie nullValueChar System.Char.IsUpper
     )
 
 [<Test>]
@@ -285,35 +329,38 @@ let filterTest4 () =
                     { Value = 'D'
                       Children = seq { yield { Value = 'K'; Children = Seq.empty } } }
             } },
-        create
-        |> insert "AcBcd"
-        |> insert "DcKcd"
-        |> filterTrie System.Char.IsUpper
+        create nullValueChar
+        |> insert nullValueChar "AcBcd"
+        |> insert nullValueChar "DcKcd"
+        |> filterTrie nullValueChar System.Char.IsUpper
     )
 
 [<Test>]
 let foldTest1 () =
-    Assert.AreEqual( "abc ",
-        create
-        |> insert "cba"
+    Assert.AreEqual(
+        "abc ",
+        create nullValueChar
+        |> insert nullValueChar "cba"
         |> foldTrie (fun state ch -> string ch + state) ""
     )
 
 [<Test>]
 let foldTest2 () =
-    Assert.AreEqual( "cbcba ",
-        create
-        |> insert "abc"
-        |> insert "bc"
+    Assert.AreEqual(
+        "cbcba ",
+        create nullValueChar
+        |> insert nullValueChar "abc"
+        |> insert nullValueChar "bc"
         |> foldTrie (fun state ch -> string ch + state) ""
     )
 
 [<Test>]
 let foldTest3 () =
-    Assert.AreEqual( "dwrcba ",
-        create
-        |> insert "abc"
-        |> insert "arw"
-        |> insert "ard"
+    Assert.AreEqual(
+        "dwrcba ",
+        create nullValueChar
+        |> insert nullValueChar "abc"
+        |> insert nullValueChar "arw"
+        |> insert nullValueChar "ard"
         |> foldTrie (fun state ch -> string ch + state) ""
     )

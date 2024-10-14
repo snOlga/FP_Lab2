@@ -1,29 +1,29 @@
 module Trie
 
-type Node = { Value: char; Children: seq<Node> }
+type Node<'T> = { Value: 'T; Children: seq<Node<'T>> }
 
-let create = { Value = ' '; Children = Seq.empty }
+let create nullValue = { Value = nullValue; Children = Seq.empty }
 
-let rec insert (word: char seq) (current: Node) : Node =
+let rec insert nullValue (word: seq<'a>) (current: Node<'T>) : Node<'T> =
     match Seq.length word with
     | 0 -> current
     | _ ->
         match Seq.length current.Children with // is children exsit
-        | 0 when current.Value = ' ' -> // to root
+        | 0 when current.Value = nullValue -> // to root
             let newChild =
-                insert
+                insert nullValue
                     (word)
                     { Value = Seq.head word
                       Children = Seq.empty }
 
             { current with Children = (Seq.singleton (newChild)) }
-        | 0 when Seq.length word = 1 -> // last char as leaf
+        | 0 when Seq.length word = 1 -> // last element as leaf
             { current with
                 Value = Seq.head word
                 Children = Seq.empty }
         | 0 when Seq.length word > 1 -> // part of word as "leaf"
             let newChild =
-                insert
+                insert nullValue
                     (Seq.tail word)
                     { Value = Seq.head word
                       Children = Seq.empty }
@@ -33,7 +33,7 @@ let rec insert (word: char seq) (current: Node) : Node =
         | _ ->
             match Seq.tryFind (fun node -> node.Value = (Seq.head word)) current.Children with
             | Some child when Seq.length word <> 1 ->
-                let updatedChild = insert (Seq.tail word) child
+                let updatedChild = insert nullValue (Seq.tail word) child
 
                 { current with
                     Children =
@@ -50,7 +50,7 @@ let rec insert (word: char seq) (current: Node) : Node =
                     { Value = Seq.head word
                       Children =
                         Seq.singleton (
-                            insert
+                            insert nullValue
                                 (Seq.tail word)
                                 { Value = (Seq.head word)
                                   Children = Seq.empty }
@@ -89,14 +89,14 @@ let rec insert (word: char seq) (current: Node) : Node =
 //                         current.Children) }
 
 
-let rec mapTrie (func) (current: Node) : Node =
+let rec mapTrie nullValue (func) (current: Node<'T>) : Node<'T> =
     match Seq.length current.Children with
     | 0 -> { current with Value = func current.Value }
     | _ ->
         { Value = func current.Value
-          Children = Seq.map (fun child -> mapTrie func child) current.Children }
+          Children = Seq.map (fun child -> mapTrie nullValue func child) current.Children }
 
-let rec filterTrie (func) (current: Node) : Node =
+let rec filterTrie nullValue (func) (current: Node<'T>) : Node<'T> =
     match Seq.length current.Children with
     | len when len <> 0 ->
         { current with
@@ -104,14 +104,14 @@ let rec filterTrie (func) (current: Node) : Node =
                 seq {
                     for child in current.Children do
                         match child.Value with
-                        | value when func value = true && (filterTrie func child).Value <> ' ' -> yield filterTrie func child
-                        | value when func value = false -> yield! (filterTrie func child).Children
+                        | value when func value = true && (filterTrie nullValue func child).Value <> nullValue -> yield filterTrie nullValue func child
+                        | value when func value = false -> yield! (filterTrie nullValue func child).Children
                         | _ -> ()
                 } }
     | 0 when func current.Value = true -> current
-    | 0 when func current.Value = false -> { current with Value = ' ' }
+    | 0 when func current.Value = false -> { current with Value = nullValue }
 
-let rec foldTrie (func) state (current:Node) =
+let rec foldTrie (func) state (current:Node<'T>) =
     let newState = func state current.Value
     current.Children |> Seq.fold (foldTrie func) newState
     
