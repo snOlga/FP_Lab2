@@ -110,3 +110,8 @@ let rec filterTrie (func) (current: Node) : Node =
                 } }
     | 0 when func current.Value = true -> current
     | 0 when func current.Value = false -> { current with Value = ' ' }
+
+let rec foldTrie (func) state (current:Node) =
+    let newState = func state current.Value
+    current.Children |> Seq.fold (foldTrie func) newState
+    

@@ -290,3 +290,30 @@ let filterTest4 () =
         |> insert "DcKcd"
         |> filterTrie System.Char.IsUpper
     )
+
+[<Test>]
+let foldTest1 () =
+    Assert.AreEqual( "abc ",
+        create
+        |> insert "cba"
+        |> foldTrie (fun state ch -> string ch + state) ""
+    )
+
+[<Test>]
+let foldTest2 () =
+    Assert.AreEqual( "cbcba ",
+        create
+        |> insert "abc"
+        |> insert "bc"
+        |> foldTrie (fun state ch -> string ch + state) ""
+    )
+
+[<Test>]
+let foldTest3 () =
+    Assert.AreEqual( "dwrcba ",
+        create
+        |> insert "abc"
+        |> insert "arw"
+        |> insert "ard"
+        |> foldTrie (fun state ch -> string ch + state) ""
+    )
