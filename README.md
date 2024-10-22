@@ -122,27 +122,45 @@ let filterTest () =
 ```
 [<Test>]
 let monoid () =
-    Assert.AreEqual(
-        create nullValueChar
-        |> insert nullValueChar "a"
-        |> insert nullValueChar "",
-        create nullValueChar
-        |> insert nullValueChar ""
-        |> insert nullValueChar "a"
-    )
+    let property (value: string) =
+        let result1 =
+            create nullValueChar
+            |> insert nullValueChar value
+            |> insert nullValueChar ""
+
+        let result2 =
+            create nullValueChar
+            |> insert nullValueChar ""
+            |> insert nullValueChar value
+
+        areEqual result1 result2
+
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
 ```
 
 Свойство неповторяемости значений:
 ```
 [<Test>]
 let propertyOfSet () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
-        create nullValueChar
-        |> insert nullValueChar "a"
-        |> insert nullValueChar "a"
-    )
+    let property (value: char) =
+        let result1 = { 
+                Value = ' '
+                Children = seq { yield { Value = value; Children = Seq.empty } } }
+
+        let charSeq = 
+            seq {
+                yield value
+            }
+
+        let result2 =
+            create nullValueChar
+            |> insert nullValueChar charSeq 
+            |> insert nullValueChar charSeq
+
+        areEqual result1 result2
+
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
+    Assert.Pass()
 ```
 
 Свойство полиморфизма (например, теперь с числами):
@@ -151,25 +169,25 @@ let nullValueInt = 0
 
 [<Test>]
 let polymorphism () =
-    Assert.AreEqual(
-        { Value = 0
-          Children =
+    let property (value: byte) =
+        let result1 = { 
+                Value = nullValueByte
+                Children = seq { yield { Value = value; Children = Seq.empty } } }
+
+        let intSeq = 
             seq {
-                yield
-                    { Value = 1
-                      Children =
-                        seq {
-                            yield
-                                { Value = 2
-                                  Children = seq { yield { Value = 3; Children = Seq.empty } } }
-                        } }
-            } },
-        create nullValueInt
-        |> insert nullValueInt (seq { 
-                                        yield 1 
-                                        yield 2
-                                        yield 3})
-    )
+                yield value
+            }
+
+        let result2 =
+            create nullValueByte
+            |> insert nullValueByte intSeq 
+            |> insert nullValueByte intSeq
+
+        areEqual result1 result2
+
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
+    Assert.Pass()
 ```
 
 ---
@@ -184,3 +202,5 @@ let polymorphism () =
 Другая проблема случилась в том, что нельзя было возвращать null-value, из-за чего пришлось придумывать костыль :(
 
 Удивило, что pattern-matching требует полного покрытия
+
+Property-test интересная штука
