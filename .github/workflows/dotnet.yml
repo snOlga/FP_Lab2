@@ -25,6 +25,4 @@ jobs:
         dotnet build --no-restore
     - name: Test
       run: |
-        dotnet test --filter Name~monoid  
-        dotnet test --filter Name~propertyOfSet
-        dotnet test --filter Name~polymorphism 
+        dotnet test
