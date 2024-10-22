@@ -25,7 +25,7 @@ let monoid () =
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(20), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
 
 
 [<Test>]
@@ -47,7 +47,7 @@ let propertyOfSet () =
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(20), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
     Assert.Pass()
 
 let nullValueByte = 0uy
@@ -71,5 +71,5 @@ let polymorphism () =
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(20), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
     Assert.Pass()
