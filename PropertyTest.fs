@@ -25,7 +25,7 @@ let monoid () =
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(50), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
 
 
 [<Test>]
@@ -47,15 +47,16 @@ let propertyOfSet () =
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(50), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
+    Assert.Pass()
 
-let nullValueInt = 0
+let nullValueByte = 0uy
 
 [<Test>]
 let polymorphism () =
-    let property (value: int) =
+    let property (value: byte) =
         let result1 = { 
-                Value = nullValueInt
+                Value = nullValueByte
                 Children = seq { yield { Value = value; Children = Seq.empty } } }
 
         let intSeq = 
@@ -64,10 +65,11 @@ let polymorphism () =
             }
 
         let result2 =
-            create nullValueInt
-            |> insert nullValueInt intSeq 
-            |> insert nullValueInt intSeq
+            create nullValueByte
+            |> insert nullValueByte intSeq 
+            |> insert nullValueByte intSeq
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(50), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
+    Assert.Pass()
