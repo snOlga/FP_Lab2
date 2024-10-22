@@ -1,5 +1,7 @@
 module FP_Lab2
 
+open System
+
 open NUnit.Framework
 open Trie
 
@@ -226,10 +228,13 @@ let insertTest13 () =
                         } }
             } },
         create nullValueInt
-        |> insert nullValueInt (seq { 
-                                        yield 1 
-                                        yield 2
-                                        yield 3})
+        |> insert
+            nullValueInt
+            (seq {
+                yield 1
+                yield 2
+                yield 3
+            })
     )
 
 [<Test>]
@@ -247,8 +252,11 @@ let deleteTest () =
                                   Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
                         } }
             } },
-    create nullValueChar |> insert nullValueChar "abc" |> insert nullValueChar "bca" |> delete "bca"
-  )
+        create nullValueChar
+        |> insert nullValueChar "abc"
+        |> insert nullValueChar "bca"
+        |> delete "bca"
+    )
 
 [<Test>]
 let mapTest () =
