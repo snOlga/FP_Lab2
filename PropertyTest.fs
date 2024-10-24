@@ -46,7 +46,7 @@ let monoid2 () =
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithStartSize(2), property)
 
 
 [<Test>]
