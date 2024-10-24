@@ -11,7 +11,7 @@ let rec areEqual node1 node2 =
 let nullValueChar = ' '
 
 [<Test>]
-let monoid () =
+let monoid1 () =
     let property (value: string) =
         let result1 =
             create nullValueChar
@@ -22,10 +22,31 @@ let monoid () =
             create nullValueChar
             |> insert nullValueChar ""
             |> insert nullValueChar value
+        
+        printf "%s" value
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
+
+[<Test>]
+let monoid2 () =
+    let property (value1: string) (value2: string) =
+        let result1 =
+            create nullValueChar
+            |> insert nullValueChar value1
+            |> insert nullValueChar (Seq.tail value1)
+            |> insert nullValueChar value2
+
+        let result2 =
+            create nullValueChar
+            |> insert nullValueChar value2
+            |> insert nullValueChar (Seq.tail value1)
+            |> insert nullValueChar value1
+
+        areEqual result1 result2
+
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
 
 
 [<Test>]
@@ -47,7 +68,7 @@ let propertyOfSet () =
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
     Assert.Pass()
 
 let nullValueByte = 0uy
@@ -71,5 +92,5 @@ let polymorphism () =
 
         areEqual result1 result2
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
     Assert.Pass()
