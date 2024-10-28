@@ -22,10 +22,14 @@ let monoid1 () =
             create nullValueChar
             |> insert nullValueChar ""
             |> insert nullValueChar value
+
+        let result3 =
+            create nullValueChar
+            |> insert nullValueChar value
         
         printf "%s" value
 
-        areEqual result1 result2
+        (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)
 
     Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
 
@@ -51,20 +55,17 @@ let monoid2 () =
 
 [<Test>]
 let propertyOfSet () =
-    let property (value: char) =
-        let result1 = { 
-                Value = ' '
-                Children = seq { yield { Value = value; Children = Seq.empty } } }
-
-        let charSeq = 
-            seq {
-                yield value
-            }
+    let property (value: string) =
+        let result1 =
+            create nullValueChar
+            |> insert nullValueChar value 
 
         let result2 =
             create nullValueChar
-            |> insert nullValueChar charSeq 
-            |> insert nullValueChar charSeq
+            |> insert nullValueChar value 
+            |> insert nullValueChar value
+            |> insert nullValueChar value
+            |> insert nullValueChar value
 
         areEqual result1 result2
 
@@ -76,17 +77,19 @@ let nullValueByte = 0uy
 [<Test>]
 let polymorphism () =
     let property (value: byte) =
-        let result1 = { 
-                Value = nullValueByte
-                Children = seq { yield { Value = value; Children = Seq.empty } } }
-
         let intSeq = 
             seq {
                 yield value
             }
+        
+        let result1 =
+            create nullValueByte
+            |> insert nullValueByte intSeq 
 
         let result2 =
             create nullValueByte
+            |> insert nullValueByte intSeq 
+            |> insert nullValueByte intSeq
             |> insert nullValueByte intSeq 
             |> insert nullValueByte intSeq
 
