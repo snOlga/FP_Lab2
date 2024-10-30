@@ -1,5 +1,7 @@
 module Trie
 
+open System
+
 type Node<'T> = { Value: 'T; Children: seq<Node<'T>> }
 
 let create nullValue = { Value = nullValue; Children = Seq.empty }
@@ -114,4 +116,12 @@ let rec filterTrie nullValue (func) (current: Node<'T>) : Node<'T> =
 let rec foldTrie (func) state (current:Node<'T>) =
     let newState = func state current.Value
     current.Children |> Seq.fold (foldTrie func) newState
+
+let rec mergeTrie (leftOne: Node<'T>) (rightOne: Node<'T>) : Node<'T> =
+    let mergeChildren children1 children2 =
+        children1
+        |> Seq.append children2
+        |> Seq.groupBy (fun child -> child.Value)
+        |> Seq.map (fun (value, nodes) -> nodes |> Seq.reduce mergeTrie)
     
+    { leftOne with Children = (mergeChildren leftOne.Children rightOne.Children) }
