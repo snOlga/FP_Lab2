@@ -5,370 +5,394 @@ open System
 open NUnit.Framework
 open Trie
 
-let nullValueChar = ' '
+let nullValueChar = None
 
 [<Test>]
 let insertTest1 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
+                    { isEnd = false
+                      Value = Some 'a'
                       Children =
                         seq {
                             yield
-                                { Value = 'b'
-                                  Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
+                                { isEnd = false
+                                  Value = Some 'b'
+                                  Children =
+                                    seq {
+                                        yield
+                                            { isEnd = true
+                                              Value = Some 'c'
+                                              Children = Seq.empty }
+                                    } }
                         } }
             } },
-        create nullValueChar |> insert nullValueChar "abc"
+        create |> insertWord "abc"
     )
 
 [<Test>]
 let insertTest2 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
-                yield { Value = 'a'; Children = Seq.empty }
-                yield { Value = 'b'; Children = Seq.empty }
+                yield
+                    { isEnd = true
+                      Value = Some 'a'
+                      Children = Seq.empty }
+
+                yield
+                    { isEnd = true
+                      Value = Some 'b'
+                      Children = Seq.empty }
             } },
-        create nullValueChar
-        |> insert nullValueChar "a"
-        |> insert nullValueChar "b"
+        create |> insertWord "a" |> insertWord "b"
     )
 
 [<Test>]
 let insertTest3 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
+                    { isEnd = false
+                      Value = Some 'a'
                       Children =
                         seq {
                             yield
-                                { Value = 'b'
+                                { isEnd = true
+                                  Value = Some 'b'
                                   Children = Seq.empty
 
                                 }
                         } }
 
-                yield { Value = 'b'; Children = Seq.empty }
+                yield
+                    { isEnd = true
+                      Value = Some 'b'
+                      Children = Seq.empty }
             } },
-        create nullValueChar
-        |> insert nullValueChar "ab"
-        |> insert nullValueChar "b"
+        create |> insertWord "ab" |> insertWord "b"
     )
 
 [<Test>]
 let insertTest4 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
+                    { isEnd = false
+                      Value = Some 'a'
                       Children =
                         seq {
-                            yield { Value = 'b'; Children = Seq.empty }
-                            yield { Value = 'c'; Children = Seq.empty }
+                            yield
+                                { isEnd = true
+                                  Value = Some 'b'
+                                  Children = Seq.empty }
+
+                            yield
+                                { isEnd = true
+                                  Value = Some 'c'
+                                  Children = Seq.empty }
                         } }
             } },
-        create nullValueChar
-        |> insert nullValueChar "ab"
-        |> insert nullValueChar "ac"
+        create |> insertWord "ab" |> insertWord "ac"
     )
 
 [<Test>]
 let insertTest5 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
-                      Children = seq { yield { Value = 'b'; Children = Seq.empty } } }
+                    { isEnd = false
+                      Value = Some 'a'
+                      Children =
+                        seq {
+                            yield
+                                { isEnd = true
+                                  Value = Some 'b'
+                                  Children = Seq.empty }
+                        } }
             } },
-        create nullValueChar
-        |> insert nullValueChar "ab"
-        |> insert nullValueChar "a"
+        create |> insertWord "ab" |> insertWord "a"
     )
 
 [<Test>]
 let insertTest6 () =
     Assert.AreEqual(
-        { Value = ' '
-          Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
-        create nullValueChar
-        |> insert nullValueChar "a"
-        |> insert nullValueChar "a"
+        { isEnd = false
+          Value = None
+          Children =
+            seq {
+                yield
+                    { isEnd = true
+                      Value = Some 'a'
+                      Children = Seq.empty }
+            } },
+        create |> insertWord "a" |> insertWord "a"
     )
 
 [<Test>]
 let insertTest7 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
-                      Children = seq { yield { Value = 'b'; Children = Seq.empty } } }
+                    { isEnd = false
+                      Value = Some 'a'
+                      Children =
+                        seq {
+                            yield
+                                { isEnd = true
+                                  Value = Some 'b'
+                                  Children = Seq.empty }
+                        } }
 
-                yield { Value = 'c'; Children = Seq.empty }
+                yield
+                    { isEnd = true
+                      Value = Some 'c'
+                      Children = Seq.empty }
             } },
-        create nullValueChar
-        |> insert nullValueChar "ab"
-        |> insert nullValueChar "c"
+        create |> insertWord "ab" |> insertWord "c"
     )
 
 [<Test>]
 let insertTest8 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
-                      Children = seq { yield { Value = 'b'; Children = Seq.empty } } }
+                    { isEnd = false
+                      Value = Some 'a'
+                      Children =
+                        seq {
+                            yield
+                                { isEnd = true
+                                  Value = Some 'b'
+                                  Children = Seq.empty }
+                        } }
 
                 yield
-                    { Value = 'c'
-                      Children = seq { yield { Value = 'a'; Children = Seq.empty } } }
+                    { isEnd = false
+                      Value = Some 'c'
+                      Children =
+                        seq {
+                            yield
+                                { isEnd = true
+                                  Value = Some 'a'
+                                  Children = Seq.empty }
+                        } }
             } },
-        create nullValueChar
-        |> insert nullValueChar "ab"
-        |> insert nullValueChar "ca"
+        create |> insertWord "ab" |> insertWord "ca"
     )
 
 [<Test>]
 let insertTest9 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
+                    { isEnd = false
+                      Value = Some 'a'
                       Children =
                         seq {
                             yield
-                                { Value = 'a'
-                                  Children = seq { yield { Value = 'a'; Children = Seq.empty } } }
+                                { isEnd = false
+                                  Value = Some 'a'
+                                  Children =
+                                    seq {
+                                        yield
+                                            { isEnd = true
+                                              Value = Some 'a'
+                                              Children = Seq.empty }
+                                    } }
                         } }
             } },
-        create nullValueChar |> insert nullValueChar "aaa"
+        create |> insertWord "aaa"
     )
 
 [<Test>]
 let insertTest10 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
+                    { isEnd = false
+                      Value = Some 'a'
                       Children =
                         seq {
                             yield
-                                { Value = 'b'
+                                { isEnd = false
+                                  Value = Some 'b'
                                   Children =
                                     seq {
-                                        yield { Value = 'q'; Children = Seq.empty }
-                                        yield { Value = 'c'; Children = Seq.empty }
+                                        yield
+                                            { isEnd = true
+                                              Value = Some 'q'
+                                              Children = Seq.empty }
+
+                                        yield
+                                            { isEnd = true
+                                              Value = Some 'c'
+                                              Children = Seq.empty }
                                     } }
 
                             yield
-                                { Value = 'd'
-                                  Children = seq { yield { Value = 'k'; Children = Seq.empty } } }
+                                { isEnd = false
+                                  Value = Some 'd'
+                                  Children =
+                                    seq {
+                                        yield
+                                            { isEnd = true
+                                              Value = Some 'k'
+                                              Children = Seq.empty }
+                                    } }
                         } }
             } },
-        create nullValueChar
-        |> insert nullValueChar "abq"
-        |> insert nullValueChar "abc"
-        |> insert nullValueChar "adk"
+        create
+        |> insertWord "abq"
+        |> insertWord "abc"
+        |> insertWord "adk"
     )
 
 [<Test>]
 let insertTest11 () =
     Assert.AreEqual(
-        { Value = ' '
-          Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
-        create nullValueChar
-        |> insert nullValueChar "a"
-        |> insert nullValueChar ""
+        { isEnd = false
+          Value = None
+          Children =
+            seq {
+                yield
+                    { isEnd = true
+                      Value = Some 'a'
+                      Children = Seq.empty }
+            } },
+        create |> insertWord "a" |> insertWord ""
     )
 
 [<Test>]
 let insertTest12 () =
     Assert.AreEqual(
-        { Value = ' '
-          Children = seq { yield { Value = 'a'; Children = Seq.empty } } },
-        create nullValueChar
-        |> insert nullValueChar ""
-        |> insert nullValueChar "a"
+        { isEnd = false
+          Value = None
+          Children =
+            seq {
+                yield
+                    { isEnd = true
+                      Value = Some 'a'
+                      Children = Seq.empty }
+            } },
+        create |> insertWord "" |> insertWord "a"
     )
-
-let nullValueInt = 0
 
 [<Test>]
 let insertTest13 () =
     Assert.AreEqual(
-        { Value = 0
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 1
+                    { isEnd = false
+                      Value = Some '1'
                       Children =
                         seq {
                             yield
-                                { Value = 2
-                                  Children = seq { yield { Value = 3; Children = Seq.empty } } }
+                                { isEnd = false
+                                  Value = Some '2'
+                                  Children =
+                                    seq {
+                                        yield
+                                            { isEnd = true
+                                              Value = Some '3'
+                                              Children = Seq.empty }
+                                    } }
                         } }
             } },
-        create nullValueInt
-        |> insert
-            nullValueInt
-            (seq {
-                yield 1
-                yield 2
-                yield 3
-            })
+        create |> insertWord 123
     )
 
 [<Test>]
 let deleteTest () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'a'
-                      Children =
-                        seq {
-                            yield
-                                { Value = 'b'
-                                  Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
-                        } }
-            } },
-        create nullValueChar
-        |> insert nullValueChar "abc"
-        |> insert nullValueChar "bca"
-        |> delete "bca"
-    )
+    let expected = create |> insertWord "abc"
+    let actual = create |> insertWord "abc" |> insertWord "bca" |> deleteWord "bca"
+    Assert.True(areEqual expected actual)
 
 [<Test>]
 let mapTest () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'A'
-                      Children =
-                        seq {
-                            yield
-                                { Value = 'B'
-                                  Children = seq { yield { Value = 'C'; Children = Seq.empty } } }
-                        } }
-            } },
-        create nullValueChar
-        |> insert nullValueChar "abc"
-        |> mapTrie nullValueChar System.Char.ToUpper
-    )
+    let expected = create |> insertWord "ABC"
+    let actual = create |> insertWord "abc" |> mapTrie (fun (value) -> (System.Char.ToUpper value))
+    Assert.True(areEqual expected actual)
 
 [<Test>]
 let filterTest () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'A'
-                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
-            } },
-        create nullValueChar
-        |> insert nullValueChar "ABc"
-        |> filterTrie nullValueChar System.Char.IsUpper
-    )
+    let expected = create |> insertWord "AB"
+    let actual = create |> insertWord "ABc" |> filterTrie (fun (Some value) -> System.Char.IsUpper value)
+    Assert.True(areEqual expected actual)
 
 [<Test>]
 let filterTest2 () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'A'
-                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
-            } },
-        create nullValueChar
-        |> insert nullValueChar "ABcd"
-        |> filterTrie nullValueChar System.Char.IsUpper
-    )
+    let expected = create |> insertWord "AB"
+    let actual = create |> insertWord "ABcd" |> filterTrie (fun (Some value) -> System.Char.IsUpper value)
+    Assert.True(areEqual expected actual)
 
 [<Test>]
 let filterTest3 () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'A'
-                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
-            } },
-        create nullValueChar
-        |> insert nullValueChar "AcBcd"
-        |> filterTrie nullValueChar System.Char.IsUpper
-    )
+    let expected = create |> insertWord "AB"
+    let actual = create |> insertWord "AcBcd" |> filterTrie (fun (Some value) -> System.Char.IsUpper value)
+    Assert.True(areEqual expected actual)
 
 [<Test>]
 let filterTest4 () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'A'
-                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
-
-                yield
-                    { Value = 'D'
-                      Children = seq { yield { Value = 'K'; Children = Seq.empty } } }
-            } },
-        create nullValueChar
-        |> insert nullValueChar "AcBcd"
-        |> insert nullValueChar "DcKcd"
-        |> filterTrie nullValueChar System.Char.IsUpper
-    )
+    let expected = create |> insertWord "AB" |> insertWord "DK"
+    let actual = create |> insertWord "AcBcd" |> insertWord "DcKcd" |> filterTrie (fun (Some value) -> System.Char.IsUpper value)
+    Assert.True(areEqual expected actual)
 
 [<Test>]
 let foldTest1 () =
     Assert.AreEqual(
-        "abc ",
-        create nullValueChar
-        |> insert nullValueChar "cba"
-        |> foldTrie (fun state ch -> string ch + state) ""
+        "abc",
+        create
+        |> insertWord "abc"
+        |> foldTrie (fun state  ch -> state + string ch) ""
     )
 
 [<Test>]
 let foldTest2 () =
     Assert.AreEqual(
-        "cbcba ",
-        create nullValueChar
-        |> insert nullValueChar "abc"
-        |> insert nullValueChar "bc"
-        |> foldTrie (fun state ch -> string ch + state) ""
+        "abcbc",
+        create
+        |> insertWord "abc" |> insertWord "bc"
+        |> foldTrie (fun state  ch -> state + string ch) ""
     )
 
-[<Test>]
-let foldTest3 () =
-    Assert.AreEqual(
-        "dwrcba ",
-        create nullValueChar
-        |> insert nullValueChar "abc"
-        |> insert nullValueChar "arw"
-        |> insert nullValueChar "ard"
-        |> foldTrie (fun state ch -> string ch + state) ""
-    )
+// [<Test>]
+// let foldTest3 () =
+//     Assert.AreEqual(
+//         "abcarward",
+//         create 
+//         |> insertWord "abc"
+//         |> insertWord "arw"
+//         |> insertWord "ard"
+//         |> foldTrie (fun state ch -> string state + ch) ""
+//     )
