@@ -192,12 +192,22 @@ let rec filterTrie (func) (current: Node<'T>) : Node<'T> =
     | 0 when func current.Value = true -> { current with isEnd = true }
     | 0 when func current.Value = false -> { current with Value = None }
 
+let rec makeSet (stateBefore: string) (current: Node<'T>) =
+    seq { 
+        match current.Value with
+        | Some (word) ->
+            let updatedState = stateBefore + (string current.Value.Value)
+            if current.isEnd then
+                yield updatedState
+            for node in current.Children do
+                yield! makeSet updatedState node
+        | None -> 
+            for node in current.Children do
+                yield! makeSet stateBefore node
+    }
+
 let rec foldTrie (func) state (current: Node<'T>) =
-    match current.Value with
-    | Some(x) ->
-        Seq.fold (foldTrie func) (func state current.Value.Value) current.Children
-    | None ->
-        Seq.fold (foldTrie func) state current.Children
+    Seq.fold (func) (state) (makeSet "" current)
 
 let rec mergeTrie (leftOne: Node<'T>) (rightOne: Node<'T>) : Node<'T> =
     let mergeChildren children1 children2 =

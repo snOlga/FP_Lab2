@@ -374,7 +374,7 @@ let foldTest1 () =
         "abc",
         create
         |> insertWord "abc"
-        |> foldTrie (fun state  ch -> state + string ch) ""
+        |> foldTrie (fun state  ch -> state + ch) ""
     )
 
 [<Test>]
@@ -383,16 +383,16 @@ let foldTest2 () =
         "abcbc",
         create
         |> insertWord "abc" |> insertWord "bc"
-        |> foldTrie (fun state  ch -> state + string ch) ""
+        |> foldTrie (fun state  ch -> state + ch) ""
     )
 
-// [<Test>]
-// let foldTest3 () =
-//     Assert.AreEqual(
-//         "abcarward",
-//         create 
-//         |> insertWord "abc"
-//         |> insertWord "arw"
-//         |> insertWord "ard"
-//         |> foldTrie (fun state ch -> string state + ch) ""
-//     )
+[<Test>]
+let foldTest3 () =
+    Assert.AreEqual(
+        "abcarward",
+        create 
+        |> insertWord "abc"
+        |> insertWord "arw"
+        |> insertWord "ard"
+        |> foldTrie (fun state ch -> string state + ch) ""
+    )
