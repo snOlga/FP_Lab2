@@ -6,10 +6,10 @@ open Trie
 
 [<Test>]
 let monoid1 () =
-    let property (value: string) =
-        let result1 = create |> insertWord value |> mergeTrie  create
-        let result2 = create |> mergeTrie  (create |> insertWord value)
-        let result3 = create |> insertWord value
+    let property (value: string list) =
+        let result1 = create |> insertList value |> mergeTrie  create
+        let result2 = create |> mergeTrie  (create |> insertList value)
+        let result3 = create |> insertList value
 
         (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)
 
@@ -17,10 +17,10 @@ let monoid1 () =
 
 [<Test>]
 let monoid2 () =
-    let property (value1: string) (value2: string) (value3: string) =
-        let trie1 = create |> insertWord value1
-        let trie2 = create |> insertWord value2
-        let trie3 = create |> insertWord value3
+    let property (value1: string list) (value2: string list) (value3: string list) =
+        let trie1 = create |> insertList value1
+        let trie2 = create |> insertList value2
+        let trie3 = create |> insertList value3
 
         let result1 =  mergeTrie trie1 (mergeTrie trie2 trie3)
         let result2 = mergeTrie (mergeTrie trie1 trie2) trie3
@@ -30,17 +30,17 @@ let monoid2 () =
 
 [<Test>]
 let propertyOfSet () =
-    let property (value: string) =
-        let result1 = create |> insertWord value
+    let property (value: string list) =
+        let result1 = create |> insertList value
 
         let result2 =
             create
-            |> insertWord value
-            |> insertWord value
-            |> insertWord value
-            |> insertWord value
+            |> insertList value
+            |> insertList value
+            |> insertList value
+            |> insertList value
         
-        let trie = create |> insertWord value
+        let trie = create |> insertList value
 
         let result3 = mergeTrie trie trie
 
@@ -53,16 +53,16 @@ let polymorphism () =
     let property (value: byte list) =
         let result1 =
             create
-            |> insertWord value
+            |> insertList value
 
         let result2 =
             create
-            |> insertWord value 
-            |> insertWord value
-            |> insertWord value 
-            |> insertWord value
+            |> insertList value 
+            |> insertList value
+            |> insertList value 
+            |> insertList value
         
-        let trie = create |> insertWord value
+        let trie = create |> insertList value
         let result3 = mergeTrie trie trie
 
         (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)

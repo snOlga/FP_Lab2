@@ -220,3 +220,11 @@ let rec mergeTrie (leftOne: Node<'T>) (rightOne: Node<'T>) : Node<'T> =
 
 let rec areEqual node1 node2 = 
     node1.Value = node2.Value &&  (Seq.isEmpty node1.Children && Seq.isEmpty node2.Children) || Seq.forall2 (fun child1 child2 -> areEqual child1 child2) node1.Children node2.Children
+
+let rec insertList (insertionList: 'a list) (current: Node<char>) : Node<char> =
+    match List.length insertionList with
+    | 1 -> insertWord (List.head insertionList) current
+    | 0 -> create
+    | _ ->
+        let newNode = insertWord (List.head insertionList) create
+        mergeTrie (newNode) (insertList (List.tail insertionList) current)
