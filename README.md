@@ -28,19 +28,28 @@ let create nullValue = { Value = nullValue; Children = Seq.empty }
 [<Test>]
 let insertTest1 () =
     Assert.AreEqual(
-        { Value = ' '
+        { isEnd = false
+          Value = None
           Children =
             seq {
                 yield
-                    { Value = 'a'
+                    { isEnd = false
+                      Value = Some 'a'
                       Children =
                         seq {
                             yield
-                                { Value = 'b'
-                                  Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
+                                { isEnd = false
+                                  Value = Some 'b'
+                                  Children =
+                                    seq {
+                                        yield
+                                            { isEnd = true
+                                              Value = Some 'c'
+                                              Children = Seq.empty }
+                                    } }
                         } }
             } },
-        create nullValueChar |> insert nullValueChar "abc"
+        create |> insertWord "abc"
     )
 ```
 
@@ -48,32 +57,22 @@ let insertTest1 () =
 ```
 [<Test>]
 let deleteTest () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'a'
-                      Children =
-                        seq {
-                            yield
-                                { Value = 'b'
-                                  Children = seq { yield { Value = 'c'; Children = Seq.empty } } }
-                        } }
-            } },
-    create nullValueChar |> insert nullValueChar "abc" |> insert nullValueChar "bca" |> delete "bca"
-  )
+    let expected = create |> insertWord "abc"
+    let actual = create |> insertWord "abc" |> insertWord "bca" |> deleteWord "bca"
+    Assert.True(areEqual expected actual)
 ```
 
 Свертка реализуется через foldTrie:
 ```
 [<Test>]
-let foldTest1 () =
+let foldTest3 () =
     Assert.AreEqual(
-        "abc ",
-        create nullValueChar
-        |> insert nullValueChar "cba"
-        |> foldTrie (fun state ch -> string ch + state) ""
+        "abcardarw",
+        create 
+        |> insertWord "abc"
+        |> insertWord "ard"
+        |> insertWord "arw"
+        |> foldTrie (fun state ch -> string state + ch) ""
     )
 ```
 
@@ -81,113 +80,92 @@ let foldTest1 () =
 ```
 [<Test>]
 let mapTest () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'A'
-                      Children =
-                        seq {
-                            yield
-                                { Value = 'B'
-                                  Children = seq { yield { Value = 'C'; Children = Seq.empty } } }
-                        } }
-            } },
-        create nullValueChar
-        |> insert nullValueChar "abc"
-        |> mapTrie nullValueChar System.Char.ToUpper
-    )
+    let expected = create |> insertWord "ABC"
+    let actual = create |> insertWord "abc" |> mapTrie (fun (value) -> (System.Char.ToUpper value))
+    Assert.True(areEqual expected actual)
 ```
 
 Фильтрация реализуется через filterTrie:
 ```
 [<Test>]
 let filterTest () =
-    Assert.AreEqual(
-        { Value = ' '
-          Children =
-            seq {
-                yield
-                    { Value = 'A'
-                      Children = seq { yield { Value = 'B'; Children = Seq.empty } } }
-            } },
-        create nullValueChar
-        |> insert nullValueChar "ABc"
-        |> filterTrie nullValueChar System.Char.IsUpper
-    )
+    let expected = create |> insertWord "AB"
+    let actual = create |> insertWord "ABc" |> filterTrie (fun (Some value) -> System.Char.IsUpper value)
+    Assert.True(areEqual expected actual)
 ```
 
-Свойство моноида:
+Свойства моноида:
 ```
 [<Test>]
-let monoid () =
+let monoid1 () =
     let property (value: string) =
-        let result1 =
-            create nullValueChar
-            |> insert nullValueChar value
-            |> insert nullValueChar ""
+        let result1 = create |> insertWord value |> mergeTrie  create
+        let result2 = create |> mergeTrie  (create |> insertWord value)
+        let result3 = create |> insertWord value
 
-        let result2 =
-            create nullValueChar
-            |> insert nullValueChar ""
-            |> insert nullValueChar value
+        (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)
+
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(5), property)
+
+[<Test>]
+let monoid2 () =
+    let property (value1: string) (value2: string) (value3: string) =
+        let trie1 = create |> insertWord value1
+        let trie2 = create |> insertWord value2
+        let trie3 = create |> insertWord value3
+
+        let result1 =  mergeTrie trie1 (mergeTrie trie2 trie3)
+        let result2 = mergeTrie (mergeTrie trie1 trie2) trie3
 
         areEqual result1 result2
-
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(5),property)
 ```
 
 Свойство неповторяемости значений:
 ```
 [<Test>]
 let propertyOfSet () =
-    let property (value: char) =
-        let result1 = { 
-                Value = ' '
-                Children = seq { yield { Value = value; Children = Seq.empty } } }
-
-        let charSeq = 
-            seq {
-                yield value
-            }
+    let property (value: string) =
+        let result1 = create |> insertWord value
 
         let result2 =
-            create nullValueChar
-            |> insert nullValueChar charSeq 
-            |> insert nullValueChar charSeq
+            create
+            |> insertWord value
+            |> insertWord value
+            |> insertWord value
+            |> insertWord value
+        
+        let trie = create |> insertWord value
 
-        areEqual result1 result2
+        let result3 = mergeTrie trie trie
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
-    Assert.Pass()
+        (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)
+
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
 ```
 
 Свойство полиморфизма (например, теперь с числами):
 ```
-let nullValueInt = 0
-
 [<Test>]
 let polymorphism () =
-    let property (value: byte) =
-        let result1 = { 
-                Value = nullValueByte
-                Children = seq { yield { Value = value; Children = Seq.empty } } }
-
-        let intSeq = 
-            seq {
-                yield value
-            }
+    let property (value: byte list) =
+        let result1 =
+            create
+            |> insertWord value
 
         let result2 =
-            create nullValueByte
-            |> insert nullValueByte intSeq 
-            |> insert nullValueByte intSeq
+            create
+            |> insertWord value 
+            |> insertWord value
+            |> insertWord value 
+            |> insertWord value
+        
+        let trie = create |> insertWord value
+        let result3 = mergeTrie trie trie
 
-        areEqual result1 result2
+        (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(1), property)
-    Assert.Pass()
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
 ```
 
 ---

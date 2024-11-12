@@ -389,10 +389,10 @@ let foldTest2 () =
 [<Test>]
 let foldTest3 () =
     Assert.AreEqual(
-        "abcarward",
+        "abcardarw",
         create 
         |> insertWord "abc"
-        |> insertWord "arw"
         |> insertWord "ard"
+        |> insertWord "arw"
         |> foldTrie (fun state ch -> string state + ch) ""
     )
