@@ -5,66 +5,78 @@ open NUnit.Framework
 open Trie
 
 [<Test>]
-let monoid1 () =
+let identityElement () =
     let property (value: string list) =
-        let result1 = create |> insertList value |> mergeTrie  create
-        let result2 = create |> mergeTrie  (create |> insertList value)
-        let result3 = create |> insertList value
+        // e
+        let emptryTrie = create
+        // a
+        let currentTrie = create |> insertList value
+        // a * e
+        let currentWithEmpty = mergeTrie currentTrie emptryTrie
+        // e * a
+        let EmptyWithCurrent = mergeTrie emptryTrie currentTrie
 
-        (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)
-
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(5), property)
+        areEqual currentWithEmpty EmptyWithCurrent
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(1000), property)
 
 [<Test>]
-let monoid2 () =
+let associativity () =
     let property (value1: string list) (value2: string list) (value3: string list) =
-        let trie1 = create |> insertList value1
-        let trie2 = create |> insertList value2
-        let trie3 = create |> insertList value3
+        let A = create |> insertList value1
+        let B = create |> insertList value2
+        let C = create |> insertList value3
 
-        let result1 =  mergeTrie trie1 (mergeTrie trie2 trie3)
-        let result2 = mergeTrie (mergeTrie trie1 trie2) trie3
+        // m is "merge"
+        let AmBmC =  mergeTrie C (mergeTrie A B)
+        let BmCmA = mergeTrie (mergeTrie B C) A
 
-        areEqual result1 result2
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10).WithEndSize(5),property)
+        areEqual AmBmC BmCmA
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(1000),property)
 
 [<Test>]
 let propertyOfSet () =
     let property (value: string list) =
-        let result1 = create |> insertList value
+        let oneInsertion = create |> insertList value
 
-        let result2 =
+        let manyInsertion =
             create
             |> insertList value
             |> insertList value
             |> insertList value
             |> insertList value
-        
-        let trie = create |> insertList value
 
-        let result3 = mergeTrie trie trie
+        let doubledOneInsertion = mergeTrie oneInsertion oneInsertion
 
-        (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)
+        // E is "Equal"
+        let oneEone = areEqual oneInsertion oneInsertion
+        let oneEmany = areEqual oneInsertion manyInsertion
+        let oneEdoubled = areEqual oneInsertion doubledOneInsertion
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
+        oneEone && oneEmany && oneEdoubled
+
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(1000), property)
 
 [<Test>]
 let polymorphism () =
     let property (value: byte list) =
-        let result1 =
+        let oneInsertion =
             create
             |> insertList value
 
-        let result2 =
+        let manyInsertion =
             create
             |> insertList value 
             |> insertList value
             |> insertList value 
             |> insertList value
         
-        let trie = create |> insertList value
-        let result3 = mergeTrie trie trie
+        let doubledOneInsertion = mergeTrie oneInsertion oneInsertion
 
-        (areEqual result1 result2) && (areEqual result1 result3) && (areEqual result2 result3)
+        // E is "Equal"
+        let oneEone = areEqual oneInsertion oneInsertion
+        let oneEmany = areEqual oneInsertion manyInsertion
+        let oneEdoubled = areEqual oneInsertion doubledOneInsertion
 
-    Check.One(Config.QuickThrowOnFailure.WithMaxTest(10), property)
+        oneEone && oneEmany && oneEdoubled
+
+    Check.One(Config.QuickThrowOnFailure.WithMaxTest(1000), property)
