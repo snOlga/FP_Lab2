@@ -193,15 +193,15 @@ let rec filterTrie (func) (current: Node<'T>) : Node<'T> =
     | 0 when func current.Value = false -> { current with Value = None }
 
 let rec makeSet (stateBefore: string) (current: Node<'T>) =
-    seq { 
+    seq {
         match current.Value with
         | Some (word) ->
             let updatedState = stateBefore + (string current.Value.Value)
-            if current.isEnd then
-                yield updatedState
+            if current.isEnd then yield updatedState
+
             for node in current.Children do
                 yield! makeSet updatedState node
-        | None -> 
+        | None ->
             for node in current.Children do
                 yield! makeSet stateBefore node
     }
@@ -218,13 +218,16 @@ let rec mergeTrie (leftOne: Node<'T>) (rightOne: Node<'T>) : Node<'T> =
 
     { leftOne with Children = (mergeChildren leftOne.Children rightOne.Children) }
 
-let rec areEqual node1 node2 = 
-    node1.Value = node2.Value &&  (Seq.isEmpty node1.Children && Seq.isEmpty node2.Children) || Seq.forall2 (fun child1 child2 -> areEqual child1 child2) node1.Children node2.Children
+let rec areEqual node1 node2 =
+    node1.Value = node2.Value
+    && (Seq.isEmpty node1.Children
+        && Seq.isEmpty node2.Children)
+    || Seq.forall2 (fun child1 child2 -> areEqual child1 child2) node1.Children node2.Children
 
 let rec insertList (insertionList: 'a list) (current: Node<char>) : Node<char> =
-    match List.length insertionList with
-    | 1 -> insertWord (List.head insertionList) current
-    | 0 -> create
-    | _ ->
-        let newNode = insertWord (List.head insertionList) create
-        mergeTrie (newNode) (insertList (List.tail insertionList) current)
+    match insertionList with
+    | [] -> create
+    | [ oneWord ] -> insertWord oneWord current
+    | headWord :: words ->
+        let newNode = insertWord headWord create
+        mergeTrie newNode (insertList words current)
