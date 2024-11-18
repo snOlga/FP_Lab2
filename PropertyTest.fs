@@ -27,8 +27,8 @@ let associativity () =
         let C = create |> insertList value3
 
         // m is "merge"
-        let AmBmC =  mergeTrie C (mergeTrie A B)
-        let BmCmA = mergeTrie (mergeTrie B C) A
+        let AmBmC =  mergeTrie (mergeTrie A B) C
+        let BmCmA = mergeTrie A (mergeTrie B C)
 
         areEqual AmBmC BmCmA
     Check.One(Config.QuickThrowOnFailure.WithMaxTest(1000),property)
